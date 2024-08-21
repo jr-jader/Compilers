@@ -115,3 +115,18 @@ void E() {
     comer(EQ);
     comer(NUM);
 }
+
+string get_token_esperado(int t) {
+    switch (t) {
+        case IF: return "if";
+        case THEN: return "then";
+        case ELSE: return "else";
+        case BEGIN: return "begin";
+        case END: return "end";
+        case PRINT: return "print";
+        case SEMI: return ";";
+        case NUM: return "num";
+        case EQ: return "=";
+        default: return "";
+    }
+}
