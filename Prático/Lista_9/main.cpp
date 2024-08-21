@@ -35,3 +35,19 @@ void erro(int t) {
     }
     return;
 }
+
+void avancar(){
+    token = get_token();
+}
+
+void comer(int t){
+    if (erro_impresso) {
+        avancar();
+    }
+    if (token == t) {
+        avancar();
+    }else {
+        erro(t);
+    }
+    
+}
