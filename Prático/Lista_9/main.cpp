@@ -48,6 +48,38 @@ void comer(int t){
         avancar();
     }else {
         erro(t);
+    }   
+}
+
+void S() {
+    if (erro_impresso){
+        return;
     }
+    switch (token)
+    {
+    case IF:
+        comer(IF);
+        E();
+        comer(THEN);
+        S();
+        comer(ELSE);
+        S();
+        break;
     
+    case BEGIN:
+        comer(BEGIN);
+        S();
+        L();
+        break;
+
+    case PRINT;
+        comer(BEGIN);
+        E();
+        break;
+    
+    default:
+        erro_impresso = 1;
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << "ESPERADO: if, begin, print";
+        return;
+    }
 }
