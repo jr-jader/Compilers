@@ -106,3 +106,12 @@ void L() {
         return;
     }
 }
+
+void E() {
+    if (erro_impresso){
+        return;
+    }
+    comer(NUM);
+    comer(EQ);
+    comer(NUM);
+}
