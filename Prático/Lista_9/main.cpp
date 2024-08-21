@@ -149,3 +149,29 @@ string get_token_errado() {
     }
     return get_ultimo_token_lido();
 }
+
+int main() {
+    int primeiro = 1;
+    avancar();
+    do {
+        // Reseta valores
+        erro_impresso = 0;
+        cadeia_incompleta = 0;
+        reset_quebra_linha();
+        // Caso não seja a primeira iteração, imprime \n no início
+        if (primeiro) {
+            primeiro = 0;
+        } else {
+            cout << "\n";
+        }
+        // Função inicial do sintático
+        S();
+        if (!erro_impresso) {
+            cout << "CADEIA ACEITA";
+        }
+        if (get_ultimo_caractere_lido() != -1 && erro_impresso && !cadeia_incompleta) {
+            avancar_cadeia();
+        }
+    } while (get_ultimo_caractere_lido() != -1);
+    return 0;
+}
