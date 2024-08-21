@@ -130,3 +130,16 @@ string get_token_esperado(int t) {
         default: return "";
     }
 }
+
+void avancar_cadeia() {
+    char caractere_lido;
+    caractere_lido = cin.get();
+    while (caractere_lido != '\n') {
+        if (caractere_lido == -1) {
+            exit(0);
+        }
+        caractere_lido = cin.get();
+    }
+    avancar();
+}
+
