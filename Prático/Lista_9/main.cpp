@@ -143,3 +143,9 @@ void avancar_cadeia() {
     avancar();
 }
 
+string get_token_errado() {
+    if (token == NUM) {
+        return "num";
+    }
+    return get_ultimo_token_lido();
+}
