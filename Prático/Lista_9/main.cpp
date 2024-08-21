@@ -83,3 +83,26 @@ void S() {
         return;
     }
 }
+
+void L() {
+    if (erro_impresso) {
+        return;
+    }
+    switch (token)
+    {
+    case END:
+        comer(END);
+        break;
+    
+    case SEMI:
+        comer(SEMI);
+        S();
+        L();
+        break;
+    
+    default:
+        erro_impresso = 1; 
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: end, ;"; 
+        return;
+    }
+}
