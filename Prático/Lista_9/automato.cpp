@@ -72,3 +72,12 @@ int espaco_tab_ou_quebra_linha(char caractere_lido) {
         default: return 0;
     }
 }
+
+void formatar_inicio() {
+    char caractere_lido;
+    caractere_lido = cin.get();
+    while (espaco_tab_ou_quebra_linha(caractere_lido)) {
+        caractere_lido = cin.get();
+    }
+    cin.unget();
+}
