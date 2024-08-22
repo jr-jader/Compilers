@@ -56,3 +56,10 @@ int get_indice(char caractere) {
         }
     }
 }
+
+int get_proximo_estado(int estado, char caractere_lido) {
+    if (caractere_lido >= 'a' && caractere_lido <= 'z') {
+        return transicoes[estado][get_indice(toupper(caractere_lido))];
+    }
+    return transicoes[estado][get_indice(caractere_lido)];
+}
