@@ -81,3 +81,22 @@ void formatar_inicio() {
     }
     cin.unget();
 }
+
+int estado_final(int estado) {
+    return estados_finais[estado];
+}
+
+int retornar_token(int estado_final) {
+    switch (estado_final) {
+        case 6: return BEGIN;
+        case 10: return ELSE;
+        case 12: return END;
+        case 14: return IF;
+        case 19: return PRINT;
+        case 23: return THEN;
+        case 24: return SEMI;
+        case 26: return NUM;
+        case 27: return EQ;
+        default: return 0;
+    }
+}
