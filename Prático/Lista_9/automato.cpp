@@ -41,3 +41,18 @@ int transicoes[28][32] = {
 
 int estados_finais[ESTADOS + 1] = {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1};
 
+int get_indice(char caractere) {
+    if (caractere >= 'A' && caractere <= 'Z') {
+        return caractere - 'A';
+    } else if (caractere >= '0' && caractere <= '9') {
+        return 26;
+    } else {
+        switch (caractere) {
+            case ';': return 27;
+            case '+': return 28;
+            case '-': return 29;
+            case '=': return 30;
+            default: return 31;
+        }
+    }
+}
