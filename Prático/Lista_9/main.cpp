@@ -72,7 +72,7 @@ void S() {
         L();
         break;
 
-    case PRINT;
+    case PRINT:
         comer(BEGIN);
         E();
         break;
