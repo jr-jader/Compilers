@@ -63,3 +63,12 @@ int get_proximo_estado(int estado, char caractere_lido) {
     }
     return transicoes[estado][get_indice(caractere_lido)];
 }
+
+int espaco_tab_ou_quebra_linha(char caractere_lido) {
+    switch (caractere_lido) {
+        case '\t': return 1;
+        case '\n': return 1;
+        case ' ': return 1;
+        default: return 0;
+    }
+}
