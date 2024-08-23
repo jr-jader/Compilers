@@ -15,7 +15,7 @@ void L();
 void E();
 
 void erro(int t);
-void comer(int t);
+void eat(int t);
 void avancar();
 string get_token_esperado(int t);
 void avancar_cadeia();
@@ -40,7 +40,7 @@ void avancar(){
     token = get_token();
 }
 
-void comer(int t){
+void eat(int t){
     if (erro_impresso) {
         avancar();
     }
@@ -58,22 +58,26 @@ void S() {
     switch (token)
     {
     case IF:
-        comer(IF);
+        eat(IF);
         E();
-        comer(THEN);
+        eat(THEN);
         S();
-        comer(ELSE);
+        eat(ELSE);
         S();
         break;
     
     case BEGIN:
-        comer(BEGIN);
+        eat(BEGIN);
         S();
         L();
         break;
 
     case PRINT:
+<<<<<<< HEAD
         comer(BEGIN);
+=======
+        eat(BEGIN);
+>>>>>>> c3628e2 (Recuperei essa desgraça)
         E();
         break;
     
@@ -91,11 +95,11 @@ void L() {
     switch (token)
     {
     case END:
-        comer(END);
+        eat(END);
         break;
     
     case SEMI:
-        comer(SEMI);
+        eat(SEMI);
         S();
         L();
         break;
@@ -111,9 +115,9 @@ void E() {
     if (erro_impresso){
         return;
     }
-    comer(NUM);
-    comer(EQ);
-    comer(NUM);
+    eat(NUM);
+    eat(EQ);
+    eat(NUM);
 }
 
 string get_token_esperado(int t) {
