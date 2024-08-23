@@ -29,9 +29,9 @@ void erro(int t) {
     
     if (get_ultimo_caractere_lido() != 10 && leu_quebra_linha()) {
         cadeia_incompleta = 1;
-        cout << "ERRO SINTATICO: CADEIA INCOMPLETA";
+        cout << "ERRO SINTATICO: CADEIA INCOMPLETA" << endl;
     } else {
-        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: " << get_token_esperado(t);
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: " << get_token_esperado(t) << endl;
     }
     return;
 }
@@ -79,7 +79,7 @@ void S() {
     
     default:
         erro_impresso = 1;
-        cout << "ERRO SINTATICO EM: " << get_token_errado() << "ESPERADO: if, begin, print";
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << "ESPERADO: if, begin, print" << endl;
         return;
     }
 }
@@ -102,7 +102,7 @@ void L() {
     
     default:
         erro_impresso = 1; 
-        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: end, ;"; 
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: end, ;" << endl; 
         return;
     }
 }
@@ -167,7 +167,7 @@ int main() {
         // Função inicial do sintático
         S();
         if (!erro_impresso) {
-            cout << "CADEIA ACEITA";
+            cout << "CADEIA ACEITA" << endl;
         }
         if (get_ultimo_caractere_lido() != -1 && erro_impresso && !cadeia_incompleta) {
             avancar_cadeia();

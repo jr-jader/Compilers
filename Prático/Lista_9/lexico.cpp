@@ -14,13 +14,8 @@ static char inicio_cadeia;
 
 static int quebra_linha;
 
-<<<<<<< HEAD
-string obter_ultimo_token_lido() {
-    return string(ultimo_token_lido);
-=======
 char* get_ultimo_token_lido() {
     return ultimo_token_lido;
->>>>>>> c3628e2 (Recuperei essa desgraça)
 }
 
 char get_ultimo_caractere_lido() {
@@ -87,8 +82,4 @@ int get_token() {
             cursor_ultimo_final = cursor_atual;
         }
     }
-}
-
-char get_ultimo_caractere_lido() {
-    return ultimo_caractere_lido;
 }
