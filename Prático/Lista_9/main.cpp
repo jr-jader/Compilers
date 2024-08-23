@@ -73,11 +73,7 @@ void S() {
         break;
 
     case PRINT:
-<<<<<<< HEAD
-        comer(BEGIN);
-=======
         eat(BEGIN);
->>>>>>> c3628e2 (Recuperei essa desgraça)
         E();
         break;
     
