@@ -17,9 +17,9 @@ void E();
 void erro(int t);
 void eat(int t);
 void avancar();
-string get_token_esperado(int t);
+char* get_token_esperado(int t);
 void avancar_cadeia();
-string get_token_errado();
+char* get_token_errado();
 
 void erro(int t) {
     if (erro_impresso) {
@@ -73,13 +73,13 @@ void S() {
         break;
 
     case PRINT:
-        eat(BEGIN);
+        eat(PRINT);
         E();
         break;
     
     default:
         erro_impresso = 1;
-        cout << "ERRO SINTATICO EM: " << get_token_errado() << "ESPERADO: if, begin, print" << endl;
+        cout << "ERRO SINTATICO EM: " << get_token_errado() << " ESPERADO: if, begin, print" << endl;
         return;
     }
 }
@@ -116,7 +116,7 @@ void E() {
     eat(NUM);
 }
 
-string get_token_esperado(int t) {
+char* get_token_esperado(int t) {
     switch (t) {
         case IF: return "if";
         case THEN: return "then";
@@ -127,7 +127,6 @@ string get_token_esperado(int t) {
         case SEMI: return ";";
         case NUM: return "num";
         case EQ: return "=";
-        default: return "";
     }
 }
 
@@ -143,7 +142,7 @@ void avancar_cadeia() {
     avancar();
 }
 
-string get_token_errado() {
+char* get_token_errado() {
     if (token == NUM) {
         return "num";
     }
@@ -158,12 +157,14 @@ int main() {
         erro_impresso = 0;
         cadeia_incompleta = 0;
         reset_quebra_linha();
+        
         // Caso não seja a primeira iteração, imprime \n no início
         if (primeiro) {
             primeiro = 0;
         } else {
             cout << "\n";
         }
+        
         // Função inicial do sintático
         S();
         if (!erro_impresso) {
