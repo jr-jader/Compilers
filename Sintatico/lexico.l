@@ -1,113 +1,177 @@
 %option noyywrap
 
 %{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "sintatico.tab.h"
 
-int line = 1;
-int column = 1;
-int comment_start_line = 0;
-int comment_start_column = 0;
-int flag_end_line = 0;
-int error_column = 0;
-int error_flag = 1;
+#define ERROR_LINE_DISPLAY_SIZE 4096
 
-char line_aux[2048];
+char error_line[ERROR_LINE_DISPLAY_SIZE],
+     prev_line[ERROR_LINE_DISPLAY_SIZE];
 
-extern void print_error_syntax();
+char* error_line_ptr = error_line,
+    * prev_line_ptr = prev_line;
 
-void print_line_aux() {
-    printf("%s", line_aux);
-}
+unsigned long count = 0,
+              line = 1,
+              col = 1,
+              prev_line_num = 1,
+              prev_col = 1;
+
+static void comment();
 
 %}
 
-%x comment
-%x comment_slashes
+%%
+static void comment(int start_line, int start_col){
+    int ch,
+        prev = '*';
+    
+    while( (ch = input()) > 0){
+        strncat(error_line, &ch, 1);
+        col++;
+        switch(ch){
+
+            case '*':
+                if( (ch = input()) == '/'){
+                    col += 1;
+                    strncat(error_line, &ch, 1);
+                    return;
+                }
+                unput(ch);
+                ch = '*';
+
+                if(prev == '/'){
+                    if(count > 0)
+                        putchar('\n');
+                    printf("warning:%d:%d: \'/*\' within block comment"
+                        , line, col - 2);
+                    ++count;
+                }
+                break;
+
+            case '\n':
+                line++;
+                col = 1;
+                prev_line_num = line; prev_col = col;
+                strcpy(prev_line, error_line);
+                strcpy(error_line, "");
+                break;
+
+            default:
+                break;
+        }
+        prev = ch;
+    }
+
+    ++count;
+
+    printf("error:lexical:%d:%d: unterminated comment", 
+        start_line, start_col);
+    exit(EXIT_FAILURE);
+}
+      
+"void"      { strncat(error_line, yytext, yyleng); col += yyleng; return VOID; }
+"int"       { strncat(error_line, yytext, yyleng); col += yyleng; return INT; }
+"char"      { strncat(error_line, yytext, yyleng); col += yyleng; return CHAR; }
+"return"    { strncat(error_line, yytext, yyleng); col += yyleng; return RETURN; }
+"break"     { strncat(error_line, yytext, yyleng); col += yyleng; return BREAK; }
+"switch"    { strncat(error_line, yytext, yyleng); col += yyleng; return SWITCH; }
+"case"      { strncat(error_line, yytext, yyleng); col += yyleng; return CASE; }
+"default"   { strncat(error_line, yytext, yyleng); col += yyleng; return DEFAULT; }
+"do"        { strncat(error_line, yytext, yyleng); col += yyleng; return DO; }
+"while"     { strncat(error_line, yytext, yyleng); col += yyleng; return WHILE; }
+"for"       { strncat(error_line, yytext, yyleng); col += yyleng; return FOR; }
+"if"        { strncat(error_line, yytext, yyleng); col += yyleng; return IF; }
+"else"      { strncat(error_line, yytext, yyleng); col += yyleng; return ELSE; }
+"typedef"   { strncat(error_line, yytext, yyleng); col += yyleng; return TYPEDEF; }
+"struct"    { strncat(error_line, yytext, yyleng); col += yyleng; return STRUCT; }
+"/*"        { strncat(error_line, yytext, yyleng); col += 2; comment(line, col - 2); }
+"//"[^\n]*  { strncat(error_line, yytext, yyleng); }
+"++"        { strncat(error_line, yytext, yyleng); col += yyleng; return INC; }
+"+"         { strncat(error_line, yytext, yyleng); col += yyleng; return PLUS; }
+"--"        { strncat(error_line, yytext, yyleng); col += yyleng; return DEC; }
+"-"         { strncat(error_line, yytext, yyleng); col += yyleng; return MINUS; }
+"->"        { strncat(error_line, yytext, yyleng); col += yyleng; return POINTER; }
+"+="        { strncat(error_line, yytext, yyleng); col += yyleng; return ADD_ASSIGN; }
+"-="        { strncat(error_line, yytext, yyleng); col += yyleng; return MINUS_ASSIGN; }
+"*"         { strncat(error_line, yytext, yyleng); col += yyleng; return MULTIPLY; }
+"/"         { strncat(error_line, yytext, yyleng); col += yyleng; return DIV; }
+"%"         { strncat(error_line, yytext, yyleng); col += yyleng; return REMAINDER; }
+"&&"        { strncat(error_line, yytext, yyleng); col += yyleng; return LOGICAL_AND; }
+"&"         { strncat(error_line, yytext, yyleng); col += yyleng; return BITWISE_AND; }
+"||"        { strncat(error_line, yytext, yyleng); col += yyleng; return LOGICAL_OR; }
+"|"         { strncat(error_line, yytext, yyleng); col += yyleng; return BITWISE_OR; }
+"=="        { strncat(error_line, yytext, yyleng); col += yyleng; return EQUAL; }
+"="         { strncat(error_line, yytext, yyleng); col += yyleng; return ASSIGN; }
+">>"        { strncat(error_line, yytext, yyleng); col += yyleng; return R_SHIFT; }
+"<<"        { strncat(error_line, yytext, yyleng); col += yyleng; return L_SHIFT; }
+"~"         { strncat(error_line, yytext, yyleng); col += yyleng; return BITWISE_NOT; }
+"^"         { strncat(error_line, yytext, yyleng); col += yyleng; return BITWISE_XOR; }
+"!="        { strncat(error_line, yytext, yyleng); col += yyleng; return NOT_EQUAL; }
+"<="        { strncat(error_line, yytext, yyleng); col += yyleng; return LESS_EQUAL; }
+">="        { strncat(error_line, yytext, yyleng); col += yyleng; return GREATER_EQUAL; }
+"!"         { strncat(error_line, yytext, yyleng); col += yyleng; return NOT; }
+"<"         { strncat(error_line, yytext, yyleng); col += yyleng; return LESS_THAN; }
+">"         { strncat(error_line, yytext, yyleng); col += yyleng; return GREATER_THAN; }
+";"         { strncat(error_line, yytext, yyleng); col += yyleng; return SEMICOLON; }
+","         { strncat(error_line, yytext, yyleng); col += yyleng; return COMMA; }
+":"         { strncat(error_line, yytext, yyleng); col += yyleng; return COLON; }
+"("         { strncat(error_line, yytext, yyleng); col += yyleng; return L_PAREN; }
+")"         { strncat(error_line, yytext, yyleng); col += yyleng; return R_PAREN; }
+"{"         { strncat(error_line, yytext, yyleng); col += yyleng; return L_CURLY_BRACKET; }
+"}"         { strncat(error_line, yytext, yyleng); col += yyleng; return R_CURLY_BRACKET; }
+"["         { strncat(error_line, yytext, yyleng); col += yyleng; return L_SQUARE_BRACKET; }
+"]"         { strncat(error_line, yytext, yyleng); col += yyleng; return R_SQUARE_BRACKET; }
+"?"	        { strncat(error_line, yytext, yyleng); col += yyleng; return TERNARY_CONDITIONAL; }
+"#"         { strncat(error_line, yytext, yyleng); col += yyleng; return NUMBER_SIGN; }
+"printf"    { strncat(error_line, yytext, yyleng); col += yyleng; return PRINTF; }
+"scanf"     { strncat(error_line, yytext, yyleng); col += yyleng; return SCANF; }
+"define"    { strncat(error_line, yytext, yyleng); col += yyleng; return DEFINE; }
+"exit"      { strncat(error_line, yytext, yyleng); col += yyleng; return EXIT; }
+
+[_a-zA-Z][_a-zA-Z0-9]* {
+    if(yyleng > 255){
+        if(count > 0)
+            putchar('\n');
+        printf("error:lexical:%d:%d: identifier too long", line, 
+            col);
+    }
+    else{
+        strncat(error_line, yytext, yyleng); col += yyleng;
+        return IDENTIFIER;
+    }
+}
+
+"0"[xX][a-fA-F0-9]+ { strncat(error_line, yytext, yyleng); col += yyleng; return NUM_HEXA; }
+"0"[1-7][0-7]*      { strncat(error_line, yytext, yyleng); col += yyleng; return NUM_OCTAL; }
+[0-9][0-9]*         { strncat(error_line, yytext, yyleng); col += yyleng; return NUM_INTEGER; }
+["]([^"\\\n]|\\.|\\\n)*["] { strncat(error_line, yytext, yyleng); col += yyleng; return STRING; }
+'([^'\\\n]|\\.)'    { strncat(error_line, yytext, yyleng); col += yyleng; return CHARACTER; }
+\n+                 { prev_line_num = line; prev_col = col;
+                      line += yyleng; col = 1;
+                      strcpy(prev_line, error_line);
+                      strcpy(error_line, ""); 
+                    }
+[ \t]               { strncat(error_line, yytext, yyleng); col += yyleng; }
+[\r\v\f\b\a\0]+     /* white space */
+<<EOF>>             { return END_OF_FILE;}
+. { 
+    printf("error:lexical:%d:%d: %s", line, col, yytext);
+    ++col;
+    exit(EXIT_FAILURE);
+}
 
 %%
 
-\n			                {line++; column = 1; memset(line_aux, 0, 2048); if(!error_flag){flag_end_line = 1;}}
-[\f\t\r ]*	                {column += yyleng; strcat(line_aux, yytext); if(!error_flag && !flag_end_line){printf("%s", yytext);}}
-
-"/*"				        {BEGIN(comment); comment_start_line = line; comment_start_column = column; column += yyleng;}
-<comment><<EOF>>	        {BEGIN(INITIAL); printf("error:lexical:%d:%d: unterminated comment", comment_start_line, comment_start_column); return 0;}
-<comment>"*/"		        {column += yyleng; BEGIN(INITIAL);}
-<comment>\n			        {line++; column = 1;}			
-<comment>.			        {column += yyleng;}
-
-"//"						{BEGIN(comment_slashes);}
-<comment_slashes><<EOF>>	{BEGIN(INITIAL); return 0;}
-<comment_slashes>\n			{BEGIN(INITIAL); line++; column = 1;}			
-<comment_slashes>.			{column += yyleng;}
-
-"void"		{column += yyleng; strcat(line_aux, yytext); return VOID;}
-"int"		{column += yyleng; strcat(line_aux, yytext); return INT;}
-"char"		{column += yyleng; strcat(line_aux, yytext); return CHAR;}
-"return"	{column += yyleng; strcat(line_aux, yytext); return RETURN;}
-"break"		{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"switch"	{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"case"		{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"default"	{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"do"		{column += yyleng; strcat(line_aux, yytext); return DO;}
-"while"		{column += yyleng; strcat(line_aux, yytext); return WHILE;}
-"for"		{column += yyleng; strcat(line_aux, yytext); return FOR;}
-"if"		{column += yyleng; strcat(line_aux, yytext); return IF;}
-"else"		{column += yyleng; strcat(line_aux, yytext); return ELSE;}
-"typedef"	{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"struct"	{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"printf"	{column += yyleng; strcat(line_aux, yytext); return PRINTF;}
-"scanf"		{column += yyleng; strcat(line_aux, yytext); return SCANF;}
-"define"	{column += yyleng; strcat(line_aux, yytext); return DEFINE;}
-"exit"		{column += yyleng; strcat(line_aux, yytext); return EXIT;}
-"++"		{column += yyleng; strcat(line_aux, yytext); return INC;}
-"--"		{column += yyleng; strcat(line_aux, yytext); return DEC;}
-"&&"		{column += yyleng; strcat(line_aux, yytext); return LOGICAL_AND;}
-"||"		{column += yyleng; strcat(line_aux, yytext); return LOGICAL_OR;}
-"=="		{column += yyleng; strcat(line_aux, yytext); return EQUAL;}
-"!="		{column += yyleng; strcat(line_aux, yytext); return NOT_EQUAL;}
-"<="		{column += yyleng; strcat(line_aux, yytext); return LESS_EQUAL;}
-">="		{column += yyleng; strcat(line_aux, yytext); return GREATER_EQUAL;}
-">>"		{column += yyleng; strcat(line_aux, yytext); return R_SHIFT;}
-"<<"		{column += yyleng; strcat(line_aux, yytext); return L_SHIFT;}
-"+="		{column += yyleng; strcat(line_aux, yytext); return ADD_ASSIGN;}
-"-="		{column += yyleng; strcat(line_aux, yytext); return MINUS_ASSIGN;}
-"->"		{column += yyleng; strcat(line_aux, yytext); if(error_flag){error_column=column-yyleng; print_error_syntax();}}
-"+"			{column += yyleng; strcat(line_aux, yytext); return PLUS;}
-"-"			{column += yyleng; strcat(line_aux, yytext); return MINUS;}
-"*"			{column += yyleng; strcat(line_aux, yytext); return MULTIPLY;}
-"/"			{column += yyleng; strcat(line_aux, yytext); return DIV;}
-"%"			{column += yyleng; strcat(line_aux, yytext); return REMAINDER;}
-"&"			{column += yyleng; strcat(line_aux, yytext); return BITWISE_AND;}
-"|"			{column += yyleng; strcat(line_aux, yytext); return BITWISE_OR;}
-"~"			{column += yyleng; strcat(line_aux, yytext); return BITWISE_NOT;}
-"^"			{column += yyleng; strcat(line_aux, yytext); return BITWISE_XOR;}
-"!"			{column += yyleng; strcat(line_aux, yytext); return NOT;}
-"<"			{column += yyleng; strcat(line_aux, yytext); return LESS_THAN;}
-">"			{column += yyleng; strcat(line_aux, yytext); return GREATER_THAN;}
-"="			{column += yyleng; strcat(line_aux, yytext); return ASSIGN;}
-";"			{column += yyleng; strcat(line_aux, yytext); return SEMICOLON;}
-","			{column += yyleng; strcat(line_aux, yytext); return COMMA;}
-":"			{column += yyleng; strcat(line_aux, yytext); return COLON;}
-"("			{column += yyleng; strcat(line_aux, yytext); return L_PAREN;}
-")"			{column += yyleng; strcat(line_aux, yytext); return R_PAREN;}
-"{"			{column += yyleng; strcat(line_aux, yytext); return L_CURLY_BRACKET;}
-"}"			{column += yyleng; strcat(line_aux, yytext); return R_CURLY_BRACKET;}
-"["			{column += yyleng; strcat(line_aux, yytext); return L_SQUARE_BRACKET;}
-"]"			{column += yyleng; strcat(line_aux, yytext); return R_SQUARE_BRACKET;}
-"?"			{column += yyleng; strcat(line_aux, yytext); return TERNARY_CONDITIONAL;}
-"#"			{column += yyleng; strcat(line_aux, yytext); return NUMBER_SIGN;}
-
-\"(\\.|[^"\\])*\"	                            {column += yyleng; strcat(line_aux, yytext); return STRING;}
-([a-z]|"_"|[A-Z])([a-z]|"_"|[A-Z]|[0-9])*	    {column += yyleng; strcat(line_aux, yytext); return IDENTIFIER;}
-[\\][a|b|f|n|r|t|v|"\\"|'|"|?|0]                {column += yyleng; strcat(line_aux, yytext); return CHARACTER;}
-"\'"(.|"\\".)"\'"			                    {column += yyleng; strcat(line_aux, yytext); return CHARACTER;}
-
-[0][x|X][0-9A-Fa-f]+ 	                        {column += yyleng; strcat(line_aux, yytext); return NUM_HEXA;}
-[0][1-7][0-7]*					                {column += yyleng; strcat(line_aux, yytext); return NUM_OCTAL;}
-[0-9]+					                        {column += yyleng; strcat(line_aux, yytext); return NUM_INTEGER;}
-
-<<EOF>>					                        {if(!error_flag){flag_end_line = 1;} return ENDFILE;}
-
-.						                        {printf("error:lexical:%d:%d: %s", line, column, yytext); column += yyleng; exit(0);}
-
-%%
+void get_remaining_line(){
+    char ch;
+    
+    while( (ch = input()) != EOF && ch != '\n' && 
+        strlen(error_line) < ERROR_LINE_DISPLAY_SIZE){
+        strncat(error_line, &ch, 1);
+    }
+}

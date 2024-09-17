@@ -1,19 +1,22 @@
 FLEX=flex
 BISON=bison
 CC=gcc
-LIBS=-I.
+CFLAGS=
+LIBS=
 
 PROGRAMA = sintatico
 LEXICO = lexico.l
 SINTATICO = sintatico.y
 
-$(PROGRAMA): $(LEXICO)
+CC_FLAGS = -std=c99					\
+		   -I.						\
+		   -w
+
+$(PROGRAMA): $(LEXICO) $(SINTATICO)
 	$(FLEX) $(LEXICO)
 	$(BISON) -d $(SINTATICO)
-	$(CC) *.c $(LIBS) -o $(PROGRAMA)
+	$(CC) *.c $(CC_FLAGS) -o $(PROGRAMA)
 
 clean:
-	rm -f lex.yy.c
-	rm -f sintatico
-	rm -f sintatico.tab.c
-	rm -f sintatico.tab.h
+	rm -f *.c *.h
+	rm -f sintatico.exe lexico sintatico

@@ -1,379 +1,399 @@
 %{
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 extern int yylex();
+void yyerror(char *s);
 extern char* yytext;
-extern int yyleng;
-extern int line;
-extern int column;
-extern int error_column;
-extern int error_flag;
-extern int flag_end_line;
-extern void print_line_aux();
 
-void yyerror(void* s);
+extern char* error_line_ptr,
+           * prev_line_ptr;
+extern unsigned long count,
+                     line,
+                     col,
+                     prev_line_num,
+                     prev_col;
+extern const int ERROR_DISPLAY_LINE_SIZE;
 
-void print_error_syntax() {
-	error_flag = 0;
-	int i;
-	printf("error:syntax:%d:%d: %s", line, (column - yyleng), yytext);
-	printf("\n");
-
-	print_line_aux();
-
-	while(!flag_end_line) {
-		yylex();
-		if(!flag_end_line) {
-			printf("%s", yytext);
-		}
-	}
-
-	printf("\n");
-	for(i = 1; i < (error_column); i++) {
-		printf(" ");
-	}
-	printf("^");
-	exit(0);
-}
+void get_remaining_line();
 
 %}
-
-%token ADD_ASSIGN
-%token ASSIGN
-%token BITWISE_AND
-%token BITWISE_NOT
-%token BITWISE_OR
-%token BITWISE_XOR
-%token CHAR
-%token CHARACTER
-%token COLON
-%token COMMA
-%token DEC
-%token DEFINE
-%token DIV
-%token DO
-%token ELSE
-%token ENDFILE
-%token EQUAL
-%token EXIT
-%token FOR
-%token GREATER_EQUAL
-%token GREATER_THAN
 %token IDENTIFIER
-%token IF
-%token INC
-%token INT
-%token LESS_EQUAL
-%token LESS_THAN
-%token LOGICAL_AND
-%token LOGICAL_OR
-%token L_CURLY_BRACKET
-%token L_PAREN
-%token L_SHIFT
-%token L_SQUARE_BRACKET
-%token MINUS
-%token MINUS_ASSIGN
-%token MULTIPLY
-%token NOT
-%token NOT_EQUAL
-%token NUMBER_SIGN
-%token NUM_HEXA
 %token NUM_INTEGER
 %token NUM_OCTAL
-%token PLUS
-%token PRINTF
-%token REMAINDER
-%token RETURN
-%token R_CURLY_BRACKET
-%token R_PAREN
-%token R_SHIFT
-%token R_SQUARE_BRACKET
-%token SCANF
-%token SEMICOLON
+%token NUM_HEXA
 %token STRING
-%token TERNARY_CONDITIONAL
+%token CHARACTER
 %token VOID
+%token INT
+%token CHAR
+%token RETURN
+%token BREAK
+%token SWITCH
+%token CASE
+%token DEFAULT
+%token DO
 %token WHILE
+%token FOR
+%token IF
+%token ELSE
+%token TYPEDEF
+%token STRUCT
+%token PLUS
+%token MINUS
+%token MULTIPLY
+%token DIV
+%token REMAINDER
+%token INC
+%token DEC
+%token BITWISE_AND
+%token BITWISE_OR
+%token BITWISE_NOT
+%token BITWISE_XOR
+%token NOT
+%token LOGICAL_AND
+%token LOGICAL_OR
+%token EQUAL
+%token NOT_EQUAL
+%token LESS_THAN
+%token GREATER_THAN
+%token LESS_EQUAL
+%token GREATER_EQUAL
+%token R_SHIFT
+%token L_SHIFT
+%token ASSIGN
+%token ADD_ASSIGN
+%token MINUS_ASSIGN
+%token SEMICOLON
+%token COMMA
+%token COLON
+%token L_PAREN
+%token R_PAREN
+%token L_CURLY_BRACKET
+%token R_CURLY_BRACKET
+%token L_SQUARE_BRACKET
+%token R_SQUARE_BRACKET
+%token TERNARY_CONDITIONAL
+%token NUMBER_SIGN
+%token POINTER
+%token PRINTF
+%token SCANF
+%token DEFINE
+%token EXIT
+%token END_OF_FILE
 
-%start sintatico
-
-%%
-
-sintatico: programa ENDFILE { printf("SUCCESSFUL COMPILATION."); exit(0); };
-
-//Programa
-programa: declaracao programa_1 { }
-	| funcao programa_1 { }
-;
-
-//declaracaoaracoes
-programa_1: declaracao programa_1 { }
-	| funcao programa_1 { }
-	| %empty { }
-;
-
-//Funcao
-funcao: tipo loop_multiplicativo IDENTIFIER parametro L_CURLY_BRACKET loop_declaracao_var comando R_CURLY_BRACKET { }
-;
-
-//declaracaoaracao de variavies 
-declaracao: NUMBER_SIGN DEFINE IDENTIFIER expressao { }
-	| declaracao_var { }
-	| declaracao_prot { }
-;
-
-declaracao_var: tipo loop_multiplicativo IDENTIFIER loop_chaves_expressao declaracao_var_1 SEMICOLON { }
-	| tipo loop_multiplicativo IDENTIFIER loop_chaves_expressao ASSIGN expressao_atr declaracao_var_1 SEMICOLON { }
-;
-
-declaracao_var_1: declaracao_var_1 COMMA loop_multiplicativo IDENTIFIER loop_chaves_expressao { }
-	| declaracao_var_1 COMMA loop_multiplicativo IDENTIFIER loop_chaves_expressao ASSIGN expressao_atr { }
-	| %empty { }
-;
-
-//declaracaoaracao de prototipo
-declaracao_prot: tipo loop_multiplicativo IDENTIFIER parametro SEMICOLON { }
-;
-
-//parametro
-parametro: L_PAREN parametro_1 R_PAREN { }
-;
-
-parametro_1: tipo loop_multiplicativo IDENTIFIER loop_chaves_expressao parametro_2 { }
-	| %empty { }
-;
-
-parametro_2: parametro_2 COMMA tipo loop_multiplicativo IDENTIFIER loop_chaves_expressao { }
-	| %empty { }
-;
-
-//Tipo
-tipo: INT { }
-	| CHAR { }
-	| VOID { }
-;
-
-//Bloco
-bloco: L_CURLY_BRACKET comando R_CURLY_BRACKET { }
-;
-
-//Comando
-comando: lista_comando loop_lista_comando { }
-;
-
-//Lista de comando
-lista_comando: DO bloco WHILE L_PAREN expressao R_PAREN SEMICOLON { }
-	| IF L_PAREN expressao R_PAREN bloco { }
-	| IF L_PAREN expressao R_PAREN bloco ELSE bloco { }
-	| WHILE L_PAREN expressao R_PAREN bloco { }
-	| FOR L_PAREN SEMICOLON SEMICOLON R_PAREN bloco { }
-	| FOR L_PAREN expressao SEMICOLON expressao SEMICOLON expressao R_PAREN bloco { }
-	| FOR L_PAREN expressao SEMICOLON SEMICOLON R_PAREN bloco { }
-	| FOR L_PAREN SEMICOLON expressao SEMICOLON R_PAREN bloco { }
-	| FOR L_PAREN SEMICOLON SEMICOLON expressao R_PAREN bloco { }
-	| FOR L_PAREN expressao SEMICOLON expressao SEMICOLON R_PAREN bloco { }
-	| FOR L_PAREN SEMICOLON expressao SEMICOLON expressao R_PAREN bloco { }
-	| FOR L_PAREN expressao SEMICOLON SEMICOLON expressao R_PAREN bloco { }
-	| PRINTF L_PAREN STRING R_PAREN SEMICOLON { }
-	| PRINTF L_PAREN STRING COMMA expressao R_PAREN SEMICOLON { }
-	| SCANF R_PAREN STRING COMMA BITWISE_AND IDENTIFIER R_PAREN SEMICOLON { }
-	| EXIT L_PAREN expressao R_PAREN SEMICOLON { }
-	| RETURN SEMICOLON { }
-	| RETURN expressao SEMICOLON { } 
-	| expressao SEMICOLON { }
-	| SEMICOLON { }
-	| bloco { }
-;
-
-//expressaoressao
-expressao: expressao_atr loop_virgula_expressao_atr { }
-;
-
-//expressaoressao de atribuicao
-expressao_atr: expressao_cond { }
-	| expressao_unaria ASSIGN expressao_atr { }
-	| expressao_unaria ADD_ASSIGN expressao_atr { }
-	| expressao_unaria MINUS_ASSIGN expressao_atr { }
-;
-
-//expressaoressao condicional
-expressao_cond: expressao_or_log { }
-	| expressao_or_log TERNARY_CONDITIONAL expressao COLON expressao_cond { }
-;
-
-//expressaoressao OR logico
-expressao_or_log: expressao_and_log loop_expressao_and_log { }
-;
-
-//expressaoressao AND logico
-expressao_and_log: expressao_or loop_expressao_or { }
-;
-
-//expressaoressao OR
-expressao_or: expressao_xor loop_expressao_xor { }
-;
-
-//Espressao XOR
-expressao_xor: expressao_and loop_expressao_and { }
-;
-
-//expressaoressao AND
-expressao_and: expressao_igualdade loop_expressao_igualdade { }
-;
-
-//expressaoressao de igualdade
-expressao_igualdade: expressao_relacional loop_expressao_relacional { }
-;
-
-//expressaoressao relacional
-expressao_relacional: expressao_shift loop_expressao_shift { }
-;
-
-//expressaoressao shift
-expressao_shift: expressao_aditiva loop_expressao_aditiva { }
-;
-
-//expressaoressao aditiva
-expressao_aditiva: expressao_multiplicativa loop_expressao_multiplicativa { }
-;
-
-//expressaoressao multiplicativa
-expressao_multiplicativa: expressao_cast loop_expressao_cast { }
-;
-
-//expressaoressao cast
-expressao_cast: expressao_unaria { }
-	| L_PAREN tipo loop_multiplicativo R_PAREN expressao_cast { }
-;
-
-//expressaoressao unaria
-expressao_unaria: expressao_posfix { }
-	| INC expressao_unaria { }
-	| DEC expressao_unaria { }
-	| BITWISE_AND expressao_cast { }
-	| MULTIPLY expressao_cast { }
-	| PLUS expressao_cast { }
-	| MINUS expressao_cast { }
-	| BITWISE_NOT expressao_cast { }
-	| NOT expressao_cast { }
-;
-
-//expressaoressao pos-fixa
-expressao_posfix: expressao_primaria { }
-	| expressao_posfix L_SQUARE_BRACKET expressao R_SQUARE_BRACKET { }
-	| expressao_posfix INC { }
-	| expressao_posfix DEC { }
-	| expressao_posfix L_PAREN R_PAREN { }
-	| expressao_posfix L_PAREN expressao_atr loop_virgula_expressao_atr R_PAREN { }
-;
-
-//expressaoressao primaria
-expressao_primaria: IDENTIFIER { }
-	| num { }
-	| CHARACTER { }
-	| STRING { }
-	| L_PAREN expressao R_PAREN { }
-;
-
-//Numero
-num: NUM_INTEGER { }
-	| NUM_HEXA { }
-	| NUM_OCTAL { }
-;
-
-//Loop multiplicativo 
-loop_multiplicativo: loop_multiplicativo MULTIPLY{ }
-	| %empty { }
-;
-
-//Loop declaracaoaracao de variaveis 
-loop_declaracao_var: loop_declaracao_var declaracao_var { }
-	| %empty { }
-;
-
-//Loop chaves
-loop_chaves_expressao: loop_chaves_expressao L_SQUARE_BRACKET expressao R_SQUARE_BRACKET { }
-	| %empty { }
-;
-
-//Lopp lista de comando
-loop_lista_comando: loop_lista_comando lista_comando { }
-	| %empty { }
-;
-
-//Loop virgula expressaoressao de atribuicao
-loop_virgula_expressao_atr: loop_virgula_expressao_atr COMMA expressao_atr { }
-	| %empty { }
-;
-
-//Loop empressao AND logico
-loop_expressao_and_log: loop_expressao_and_log LOGICAL_OR expressao_and_log { }
-	| %empty { }
-;
-
-//Loop expressaoressao OR
-loop_expressao_or: loop_expressao_or LOGICAL_AND expressao_or { }
-	| %empty { }
-;
-
-//Loop expressaoressao XOR
-loop_expressao_xor: loop_expressao_xor BITWISE_OR expressao_xor { }
-	| %empty { }
-;
-
-//Loop expressaoressao AND
-loop_expressao_and: loop_expressao_and BITWISE_XOR expressao_and { }
-	| %empty { }
-;
-
-//Loop expressaoressao de igualdade
-loop_expressao_igualdade: loop_expressao_igualdade BITWISE_AND expressao_igualdade { }
-	| %empty { }
-;
-
-//Loop expressaoressao relacional
-loop_expressao_relacional: loop_expressao_relacional EQUAL expressao_relacional { }
-	| loop_expressao_relacional NOT_EQUAL expressao_relacional { }
-	| %empty { }
-;
-
-//Loop expressaoressao shift
-loop_expressao_shift: loop_expressao_shift LESS_THAN expressao_shift { }
-	| loop_expressao_shift LESS_EQUAL expressao_shift { }
-	| loop_expressao_shift GREATER_THAN expressao_shift { }
-	| loop_expressao_shift GREATER_EQUAL expressao_shift { }
-	| %empty { }
-;
-
-//Loop expressaoressao aditiva
-loop_expressao_aditiva: loop_expressao_aditiva L_SHIFT expressao_aditiva { }
-	| loop_expressao_aditiva R_SHIFT expressao_aditiva { }
-	| %empty { }
-;
-
-//Loop expressaoressao multiplicativa
-loop_expressao_multiplicativa: loop_expressao_multiplicativa PLUS expressao_multiplicativa { }
-	| loop_expressao_multiplicativa MINUS expressao_multiplicativa { }
-	| %empty { }
-;
-
-//Loop expressaoressao cast
-loop_expressao_cast: loop_expressao_cast MULTIPLY expressao_cast { }
-	| loop_expressao_cast DIV expressao_cast { }
-	| loop_expressao_cast REMAINDER expressao_cast { }
-	| %empty { }
-;
+%start Programa
 
 %%
 
-void yyerror (void* s) {
-	error_column = column - yyleng;
-	print_error_syntax();
+Programa
+    : Declaracoes Programa_prime END_OF_FILE {
+        if(count > 0)
+            putchar('\n');
+        printf("SUCCESSFUL COMPILATION."); 
+        
+        return 0; 
+    }
+    | Funcao Programa_prime END_OF_FILE { 
+        if(count > 0)
+            putchar('\n');
+        printf("SUCCESSFUL COMPILATION."); 
+        
+        return 0; 
+    }
+    ;
+
+Programa_prime
+    : Programa { }
+    | /* vazio */ { }
+    ;
+
+Declaracoes
+    : NUMBER_SIGN DEFINE IDENTIFIER Expressao { }
+    | DeclaraVariaveis { }
+    | DeclaraPrototipos { }
+    ;
+
+Funcao
+    : Tipo Estrela IDENTIFIER Parametros L_CURLY_BRACKET SecaoVariaveis Comandos R_CURLY_BRACKET { }
+    ;
+
+SecaoVariaveis
+    : DeclaraVariaveis SecaoVariaveis { }
+    | /* vazio */ { }
+    ;
+
+DeclaraVariaveis
+    : Tipo ListaVariaveis SEMICOLON { }
+    ;
+
+ListaVariaveis 
+    : Estrela IDENTIFIER Dimensao Inicializacao VariaveisContinuacao { }
+    ;
+
+Inicializacao
+    : ASSIGN ExprAtrib { }
+    | /* vazio */ { }
+    ;
+
+VariaveisContinuacao
+    : COMMA ListaVariaveis { }
+    | /* vazio */ { }
+    ;
+
+Estrela
+    : MULTIPLY Estrela { }
+    | /* vazio */ { }
+    ;
+
+Dimensao 
+    : L_SQUARE_BRACKET Expressao R_SQUARE_BRACKET Dimensao { }
+    | /* vazio */
+    ;
+
+DeclaraPrototipos
+    : Tipo Estrela IDENTIFIER Parametros SEMICOLON { }
+    ;
+
+Parametros
+    : L_PAREN ListaParametros R_PAREN { }
+    ;
+
+ListaParametros
+    : Tipo Estrela IDENTIFIER Dimensao ParametrosContinuacao { }
+    | /* vazio */ { }
+    ;
+
+ParametrosContinuacao
+    : COMMA Tipo Estrela IDENTIFIER Dimensao ParametrosContinuacao { }
+    | /* vazio */
+    ;
+
+Tipo
+    : INT { }
+    | CHAR { }
+    | VOID { }
+    ;
+
+Bloco
+    : L_CURLY_BRACKET Comandos R_CURLY_BRACKET { }
+    ;
+
+Comandos
+    : Comando ComandosContinuacao { }
+    ;
+
+ComandosContinuacao
+    : Comando ComandosContinuacao { }
+    | /* vazio */ { }
+    ;
+
+Comando
+    : DO Bloco WHILE L_PAREN Expressao R_PAREN SEMICOLON { }
+    | IF L_PAREN Expressao R_PAREN Bloco Else { }
+    | WHILE L_PAREN Expressao R_PAREN Bloco { }
+    | FOR L_PAREN ExprOmitivel SEMICOLON ExprOmitivel SEMICOLON ExprOmitivel R_PAREN Bloco { }
+    | PRINTF L_PAREN STRING ExprPrintf R_PAREN SEMICOLON   { }
+    | SCANF L_PAREN STRING COMMA BITWISE_AND IDENTIFIER R_PAREN SEMICOLON { }
+    | EXIT L_PAREN Expressao R_PAREN SEMICOLON { }
+    | RETURN ExprOmitivel SEMICOLON { }
+    | Expressao SEMICOLON { }
+    | Bloco { }
+    | SEMICOLON { }
+    ;
+
+ExprPrintf
+    :  COMMA Expressao { }
+    | /* vazio */ { }
+    ;
+
+ExprOmitivel
+    : Expressao { }
+    | /* vazio */
+    ;
+
+Else
+    : ELSE Bloco { }
+    | /* vazio */{ }
+    ;
+
+Expressao
+    : Expressao COMMA ExprAtrib { }
+    | ExprAtrib { }
+    ;
+
+ExprAtrib
+    : ExprCond { }
+    | ExprUnaria Atribuicao ExprAtrib { }
+
+Atribuicao
+    : ASSIGN { }
+    | ADD_ASSIGN
+    | MINUS_ASSIGN
+    ;
+
+ExprCond
+    : ExprOrLogico OperadorTernario { }
+
+OperadorTernario
+    : TERNARY_CONDITIONAL ExprCond COLON ExprCond { }
+    | /* vazio */ { }
+    ;
+
+ExprOrLogico
+    : ExprAndLogico { }
+    | ExprOrLogico LOGICAL_OR ExprAndLogico { }
+    ;
+
+ExprAndLogico
+    : ExprOr { }
+    | ExprAndLogico LOGICAL_AND ExprOr { }
+
+ExprOr
+    : ExprXor { }
+    | ExprOr BITWISE_OR ExprXor { }
+
+ExprXor
+    : ExprAnd { }
+    | ExprXor BITWISE_XOR ExprAnd { }
+
+ExprAnd
+    : ExprIgualdade { }
+    | ExprAnd BITWISE_AND ExprIgualdade { }
+
+ExprIgualdade
+    : ExprRelacional { }
+    | ExprIgualdade OperadorIgualdade ExprRelacional { }
+    ;
+
+OperadorIgualdade
+    : EQUAL { }
+    | NOT_EQUAL { }
+    ;
+
+ExprRelacional
+    : ExprShift { }
+    | ExprRelacional OperadorRelacional ExprShift { }
+
+OperadorRelacional
+    : LESS_THAN { }
+    | GREATER_THAN { }
+    | LESS_EQUAL { }
+    | GREATER_EQUAL { }
+    ;
+
+ExprShift
+    : ExprAditiva { }
+    | ExprShift OperadorShift ExprAditiva { }
+    ;
+
+OperadorShift
+    : L_SHIFT { }
+    | R_SHIFT { }
+    ;
+
+ExprAditiva
+    : ExprMultiplicativa { }
+    | ExprAditiva OperadorAditivo ExprMultiplicativa { }
+    ;
+
+OperadorAditivo
+    : PLUS { }
+    | MINUS { }
+    ;
+
+ExprMultiplicativa
+    : Cast { }
+    | ExprMultiplicativa OperadorMultiplicativo ExprUnaria { }
+    ;
+
+OperadorMultiplicativo
+    : MULTIPLY { }
+    | DIV { }
+    | REMAINDER { }
+    ;
+
+Cast
+    : L_PAREN Tipo Estrela R_PAREN Cast { }
+    | ExprUnaria { }
+    ;
+
+ExprUnaria
+    : INC ExprUnaria     { }
+    | DEC ExprUnaria { }
+    | BITWISE_AND ExprUnaria
+    | PLUS ExprUnaria { }
+    | MINUS ExprUnaria { }
+    | MULTIPLY ExprUnaria { }
+    | BITWISE_NOT ExprUnaria
+    | NOT ExprUnaria { }
+    | ExprPostfix { }
+    ;
+
+ExprPostfix
+    : ExprPrimaria { }
+    | ExprPostfix ExprPostfix_prime { }
+    ;
+
+ExprPostfix_prime
+    : L_SQUARE_BRACKET Expressao R_SQUARE_BRACKET { }
+    | INC { }
+    | DEC { }
+    | L_PAREN ExprAtrib_prime R_PAREN { }
+    ;
+
+ExprAtrib_prime
+    : ExprAtrib ExprAtribContinuacao { }
+    | /* vazio */ { }
+
+ExprAtribContinuacao
+    : COMMA ExprAtrib ExprAtribContinuacao { }
+    | /* vazio */ { }
+
+ExprPrimaria
+    : IDENTIFIER { }
+    | Numero { }
+    | CHARACTER { }
+    | STRING { }
+    | L_PAREN Expressao R_PAREN { }
+    ;
+
+Numero
+    : NUM_INTEGER { }
+    | NUM_OCTAL { }
+    | NUM_HEXA { }
+    ;
+
+%%
+
+void yyerror(char *s) {
+    col -= strlen(yytext);
+
+    if(count > 0)
+        putchar('\n');
+
+    if(strlen(error_line_ptr) == 0){
+        error_line_ptr = prev_line_ptr;
+        line = prev_line_num;
+        col = prev_col;
+    }
+
+    if(yychar == END_OF_FILE){
+        printf("error:syntax:%ld:%ld: expected declaration or statement at end of input\n",
+            line, col);
+    }
+    else{
+        printf("error:syntax:%ld:%ld: %s\n", line, col, yytext);
+        get_remaining_line();
+    }
+    puts(error_line_ptr);
+    while(--col)
+        putchar(' ');
+    putchar('^');
 }
 
-int main(int argc, char** argv) {
-	yyparse();
-	return 0;
+int main(int argc, char *argv[]){
+    yyparse();
+
+    return 0;
 }
