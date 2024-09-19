@@ -1,26 +1,24 @@
 # Compilers
-                                MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-                                MMMMMMMMMMMMds+:--------:+sdNMMMMMMMMMMM
-                                MMMMMMMMms:-+sdNMMMMMMMMNdy+--omMMMMMMMM
-                                MMMMMMh:` /mMMMMMMMMMMMMMMMMm+ `-yMMMMMM
-                                MMMMd--hN``--sNMMMMMMMMMMNy:..`md:.hMMMM
-                                MMM+`yMMMy hd+./hMMMMMMh/.+dd sMMMh`/MMM
-                                MM:.mMMMMM:.NMMh/.+dd+./hMMM--MMMMMm--NM
-                                M+`mMMMMMMN`+MMMMm-  .dMMMMo mMMMMMMN.:M
-                                d yMMMMMMMMy dNy:.omNs--sNm oMMMMMMMMh h
-                                /`MMMMMMMMMM.`.+dMMMMMMm+.``NMMMMMMMMM-:
-                                .:MMMMMMMd+./`oMMMMMMMMMMs /.+dMMMMMMM/`
-                                .:MMMMmo.:yNMs dMMMMMMMMm`oMNy:.omMMMM/`
-                                /`MNy:.omMMMMM--MMMMMMMM:.MMMMMNs--sNM.:
-                                d -` :++++++++: /++++++/ :++++++++:  : h
-                                M+ yddddddddddd+ yddddy /dddddddddddy`/M
-                                MM/.mMMMMMMMMMMM.-MMMM/.NMMMMMMMMMMm.:NM
-                                MMMo`sMMMMMMMMMMd sMMy hMMMMMMMMMMy`+MMM
-                                MMMMd--hMMMMMMMMM+`mN`/MMMMMMMMMh--hMMMM
-                                MMMMMMh:.omMMMMMMN.:/`NMMMMMMms.:hMMMMMM
-                                MMMMMMMMNs:./shmMMh  yMMNds/.:smMMMMMMMM
-                                MMMMMMMMMMMMdy+/---``---:+sdMMMMMMMMMMMM
-                                MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM                      
+                                                .....
+                                           .d$$$$*$$$$$$bc
+                                        .d$P"    d$$    "*$$.
+                                       d$"      4$"$$      "$$.
+                                     4$P        $F ^$F       "$c
+                                    z$%        d$   3$        ^$L
+                                   4$$$$$$$$$$$$$$$$$$$$$$$$$$$$$F
+                                   $$$F"""""""$F""""""$F"""""C$$*$
+                                  .$%"$$e    d$       3$   z$$"  $F
+                                  4$    *$$.4$"        $$d$P"    $$
+                                  4$      ^*$$.       .d$F       $$
+                                  4$       d$"$$c   z$$"3$       $F
+                                   $L     4$"  ^*$$$P"   $$     4$"
+                                   3$     $F   .d$P$$e   ^$F    $P
+                                    $$   d$  .$$"    "$$c 3$   d$
+                                     *$.4$"z$$"        ^*$$$$ $$
+                                      "$$$$P"             "$$$P
+                                        *$b.             .d$P"
+                                          "$$$ec.....ze$$$"
+                                              "**$$$**""                        
 
 Este repositório foi criado para armazenar e organizar os trabalhos e listas desenvolvidos durante a disciplina de Compiladores. Ele contém projetos como analisadores léxicos, sintáticos, um mini compilador para Portugol, além de listas de exercícios práticos e teóricos.
 
