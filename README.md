@@ -1,5 +1,18 @@
 # Compilers
 
+```mermaid
+graph TD;
+    A((A)) --> B((B));
+    B --> C((C));
+    C --> D((D));
+    D --> E((E));
+    E --> A;
+    A --> C;
+    C --> E;
+    E --> B;
+    B --> D;
+    D --> A;
+
 Este repositório foi criado para armazenar e organizar os trabalhos e listas desenvolvidos durante a disciplina de Compiladores. Ele contém projetos como analisadores léxicos, sintáticos, um mini compilador para Portugol, além de listas de exercícios práticos e teóricos.
 
 ## Estrutura do Repositório
