@@ -25,34 +25,33 @@
                       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠲⠦⣄⣀⡀⠀⠀⠀⠈⠉⠀⠟⠀⠀⠀⠀⣀⣀⠤⠖⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
                       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠓⠒⠒⠒⠒⠒⠛⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀                     
 
-Este repositório foi criado para armazenar e organizar os trabalhos e listas desenvolvidos durante a disciplina de Compiladores. Ele contém projetos como analisadores léxicos, sintáticos, um mini compilador para Portugol, além de listas de exercícios práticos e teóricos.
+This repository was created to store and organize the assignments and lists developed during the Compilers course. It contains projects such as lexical analyzers, parsers, a mini compiler for Portugol, as well as practical and theoretical exercise lists.
 
-## Estrutura do Repositório
+## Repository Structure
 
-- **[Analisador Léxico](./Lexico/)**
-  - Implementação de um analisador léxico desenvolvido usando Flex.
-  - O analisador reconhece e categoriza tokens com base nas definições fornecidas.
+- **[Lexical Analyzer](./Lexico/)**
+  - Implementation of a lexical analyzer developed using Flex.
+  - The analyzer recognizes and categorizes tokens based on the provided definitions.
 
-- **[Analisador Sintático](./Sintatico/)**
-  - Implementação de um analisador sintático usando Bison.
-  - O analisador utiliza uma gramática definida para identificar estruturas válidas de código.
+- **[Parser](./Sintatico/)**
+  - Implementation of a parser using Bison.
+  - The parser uses a defined grammar to identify valid code structures.
 
-- **[Compilador de Portugol](./Portugol/)**
-  - Um compilador básico que converte código escrito em Portugol para uma linguagem intermediária.
-  - Integra análise léxica e sintática para fazer a tradução.
+- **[Portugol Compiler](./Portugol/)**
+  - A basic compiler that converts code written in Portugol to an intermediate language.
+  - Integrates lexical and syntactic analysis to perform the translation.
 
-- **Listas de Exercícios**
-  - **[Práticas](./Prático/)**: Atividades focadas na implementação de técnicas de compilação.
-  - **[Teóricas](./Teórico/)**: Questões e discussões sobre conceitos relacionados a compiladores.
+- **Exercise Lists**
+  - **[Practical](./Prático/)**: Activities focused on implementing compilation techniques.
+  - **[Theoretical](./Teórico/)**: Questions and discussions about concepts related to compilers.
 
-## Requisitos
+## Requirements
 
-Para compilar e executar os projetos, é necessário ter as seguintes ferramentas instaladas:
+To compile and run the projects, the following tools are required:
 
 - Flex
 - Bison
-- G++ (para projetos em C++)
-
+- G++ (for C++ projects)
 
                                     ⢀⡶⠛⠛⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
                                     ⠈⣇⠀⠀⢸⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
