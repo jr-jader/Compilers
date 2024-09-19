@@ -26,7 +26,6 @@ Para compilar e executar os projetos, é necessário ter as seguintes ferramenta
 
 - Flex
 - Bison
-- GCC (para projetos em C)
 - G++ (para projetos em C++)
 
 ## Como Utilizar
